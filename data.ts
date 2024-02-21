@@ -109,18 +109,6 @@ export function parseSemester(string: string): number {
   return (yearDiff * 4) + semesterNumber;
 }
 
-export function formatSemester(number: number): string {
-  const seasonMap: Record<number, string> = {
-    0: 'Fall',
-    1: 'Winter',
-    2: 'Spring',
-    3: 'Summer',
-  };
-  const year = Math.floor(number / 4) + EPOCH_YEAR;
-  const season = seasonMap[number % 4];
-  return `${year}-${year + 1} ${season}`;
-}
-
 export async function preprocess(): Promise<InstructorRatingObj[]> {
   const reviews = await loadReviews();
   const courses = await loadCourses();
