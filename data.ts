@@ -46,18 +46,16 @@ type QuotaCourse = {
 };
 
 type QuotaSection = {
-  Instructor: string[];
+  instructors: string[];
 };
 
 async function loadCourses() {
-  const files = await glob('data-quota/*0/*.json');
-  const courses = (await Promise.all(files.flatMap(async file => {
-    const content = await fs.readFile(file, 'utf-8');
-    return JSON.parse(content) as QuotaCourse[];
-  }))).flat();
+  const term = await fs.readFile('data-quota/data/current-term.txt', 'utf-8');
+  const coursesJson = await fs.readFile(`data-quota/data/${term} Slim.json`, 'utf-8');
+  const courses = Object.values(JSON.parse(coursesJson) as Record<string, QuotaCourse[]>).flat();
   const data = courses
     .flatMap(course => {
-      const instructors = _.uniq(course.sections.flatMap(section => section.Instructor));
+      const instructors = _.uniq(course.sections.flatMap(section => section.instructors));
       return instructors.map(instructor => (({
         program: course.program,
         code: course.code,

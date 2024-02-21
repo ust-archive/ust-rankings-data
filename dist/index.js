@@ -20882,7 +20882,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "dj": () => (/* binding */ preprocess)
 });
 
-// UNUSED EXPORTS: EPOCH_YEAR, formatSemester
+// UNUSED EXPORTS: EPOCH_YEAR
 
 // EXTERNAL MODULE: external "fs/promises"
 var promises_ = __nccwpck_require__(292);
@@ -28443,14 +28443,12 @@ async function loadReviews() {
     }))).flat();
 }
 async function loadCourses() {
-    const files = await glob('data-quota/*0/*.json');
-    const courses = (await Promise.all(files.flatMap(async (file) => {
-        const content = await promises_default().readFile(file, 'utf-8');
-        return JSON.parse(content);
-    }))).flat();
+    const term = await promises_default().readFile('data-quota/data/current-term.txt', 'utf-8');
+    const coursesJson = await promises_default().readFile(`data-quota/data/${term} Slim.json`, 'utf-8');
+    const courses = Object.values(JSON.parse(coursesJson)).flat();
     const data = courses
         .flatMap(course => {
-        const instructors = lodash_default().uniq(course.sections.flatMap(section => section.Instructor));
+        const instructors = lodash_default().uniq(course.sections.flatMap(section => section.instructors));
         return instructors.map(instructor => (({
             program: course.program,
             code: course.code,
@@ -28473,17 +28471,6 @@ function parseSemester(string) {
     const yearDiff = parseInt(year, 10) - EPOCH_YEAR;
     const semesterNumber = seasonMap[season];
     return (yearDiff * 4) + semesterNumber;
-}
-function formatSemester(number) {
-    const seasonMap = {
-        0: 'Fall',
-        1: 'Winter',
-        2: 'Spring',
-        3: 'Summer',
-    };
-    const year = Math.floor(number / 4) + EPOCH_YEAR;
-    const season = seasonMap[number % 4];
-    return `${year}-${year + 1} ${season}`;
 }
 async function preprocess() {
     const reviews = await loadReviews();
