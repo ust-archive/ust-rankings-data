@@ -24,6 +24,7 @@ jobs:
       - name: Checkout This
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.UST_RANKINGS_DATA_TOKEN }}
           repository: ${{ github.repository }}
           fetch-depth: 0
           path: '.'
@@ -31,6 +32,7 @@ jobs:
       - name: Checkout Review
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.UST_RANKINGS_DATA_TOKEN }}
           repository: ust-archive/ust.space-data
           fetch-depth: 1
           path: './data-review'
@@ -38,6 +40,7 @@ jobs:
       - name: Checkout Quota
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.UST_RANKINGS_DATA_TOKEN }}
           repository: ust-archive/quota-data-at-ust
           fetch-depth: 1
           path: './data-schedule-quota'
