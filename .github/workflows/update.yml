@@ -40,7 +40,7 @@ jobs:
         with:
           repository: ust-archive/quota-data-at-ust
           fetch-depth: 1
-          path: './data-quota'
+          path: './data-schedule-quota'
 
       - name: Update Data
         uses: './'

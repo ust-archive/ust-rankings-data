@@ -28443,20 +28443,24 @@ async function loadReviews() {
     }))).flat();
 }
 async function loadCourses() {
-    const term = await promises_default().readFile('data-schedule-quota/data/current-term.txt', 'utf-8');
-    const coursesJson = await promises_default().readFile(`data-schedule-quota/data/${term} Slim.json`, 'utf-8');
-    const courses = Object.values(JSON.parse(coursesJson)).flat();
-    const data = courses
-        .flatMap(course => {
-        const instructors = lodash_default().uniq(course.sections.flatMap(section => section.instructors));
-        return instructors.map(instructor => (({
-            program: course.program,
-            code: course.code,
-            name: course.name,
-            instructor,
-        })));
-    });
-    return lodash_default().groupBy(data, it => it.instructor);
+    const coursesFiles = await glob('data-schedule-quota/data/*-slim.json');
+    const coursesFile = lodash_default().min(coursesFiles);
+    const coursesJson = await promises_default().readFile(coursesFile, 'utf-8');
+    const coursesJsonObj = JSON.parse(coursesJson);
+    const courses = Object.values(coursesJsonObj).flat();
+    return lodash_default()(courses)
+        .flatMap(course => lodash_default()(course.sections)
+        .flatMap(section => section.instructors)
+        .uniq() // unique instructors
+        .map(instructor => ({
+        subject: course.subject,
+        course: course.course,
+        name: course.name,
+        instructor,
+    }))
+        .value())
+        .groupBy(it => it.instructor)
+        .value();
 }
 const EPOCH_YEAR = 2012;
 function parseSemester(string) {
@@ -28498,8 +28502,8 @@ async function preprocess() {
                 rating,
                 semester,
                 course: {
-                    program: course.subject,
-                    code: course.code,
+                    subject: course.subject,
+                    course: course.code,
                     // name: course.name,
                 },
             };
@@ -28512,8 +28516,8 @@ async function preprocess() {
                 rating,
                 semester,
                 course: {
-                    program: course.subject,
-                    code: course.code,
+                    subject: course.subject,
+                    course: course.code,
                     // name: course.name,
                 },
             };
@@ -28525,8 +28529,8 @@ async function preprocess() {
             teachRatings,
             thumbRatings,
             courses: courses[instructor.name]?.map(course => ({
-                program: course.program,
-                code: course.code,
+                subject: course.subject,
+                course: course.course,
                 // name: course.name,
             })) ?? [],
         };

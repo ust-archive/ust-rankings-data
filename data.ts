@@ -38,32 +38,40 @@ async function loadReviews() {
   }))).flat();
 }
 
-type QuotaCourse = {
-  program: string;
-  code: string;
+type ScheduleQuotaCourse = {
+  subject: string;
+  course: string;
   name: string;
-  sections: QuotaSection[];
+  sections: ScheduleQuotaSection[];
 };
 
-type QuotaSection = {
+type ScheduleQuotaSection = {
   instructors: string[];
 };
 
 async function loadCourses() {
-  const term = await fs.readFile('data-quota/data/current-term.txt', 'utf-8');
-  const coursesJson = await fs.readFile(`data-quota/data/${term} Slim.json`, 'utf-8');
-  const courses = Object.values(JSON.parse(coursesJson) as Record<string, QuotaCourse[]>).flat();
-  const data = courses
-    .flatMap(course => {
-      const instructors = _.uniq(course.sections.flatMap(section => section.instructors));
-      return instructors.map(instructor => (({
-        program: course.program,
-        code: course.code,
-        name: course.name,
-        instructor,
-      })));
-    });
-  return _.groupBy(data, it => it.instructor);
+  const coursesFiles = await glob('data-schedule-quota/data/*-slim.json');
+  const coursesFile = _.min(coursesFiles)!;
+  const coursesJson = await fs.readFile(coursesFile, 'utf-8');
+  const coursesJsonObj = JSON.parse(coursesJson) as Record<string, ScheduleQuotaCourse[]>;
+
+  const courses = Object.values(coursesJsonObj).flat();
+
+  return _(courses)
+    .flatMap(course =>
+      _(course.sections)
+        .flatMap(section => section.instructors)
+        .uniq() // unique instructors
+        .map(instructor => ({
+          subject: course.subject,
+          course: course.course,
+          name: course.name,
+          instructor,
+        }))
+        .value(),
+    )
+    .groupBy(it => it.instructor)
+    .value();
 }
 
 export type Rating = {
@@ -73,8 +81,8 @@ export type Rating = {
 };
 
 export type Course = {
-  program: string;
-  code: string;
+  subject: string;
+  course: string;
   // name: string;
 };
 
@@ -139,8 +147,8 @@ export async function preprocess(): Promise<InstructorRatingObj[]> {
         rating,
         semester,
         course: {
-          program: course.subject,
-          code: course.code,
+          subject: course.subject,
+          course: course.code,
           // name: course.name,
         },
       } satisfies Rating;
@@ -153,8 +161,8 @@ export async function preprocess(): Promise<InstructorRatingObj[]> {
         rating,
         semester,
         course: {
-          program: course.subject,
-          code: course.code,
+          subject: course.subject,
+          course: course.code,
           // name: course.name,
         },
       } satisfies Rating;
@@ -167,8 +175,8 @@ export async function preprocess(): Promise<InstructorRatingObj[]> {
       teachRatings,
       thumbRatings,
       courses: courses[instructor.name]?.map(course => ({
-        program: course.program,
-        code: course.code,
+        subject: course.subject,
+        course: course.course,
         // name: course.name,
       })) ?? [],
     } satisfies InstructorRatingObj;

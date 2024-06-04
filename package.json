@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "update:review": "cd data-review && git fetch && git reset --hard",
-    "update:quota": "cd data-quota && git fetch && git reset --hard",
+    "update:quota": "cd data-schedule-quota && git fetch && git reset --hard",
     "update": "pnpm update:review && pnpm update:quota",
     "run": "tsx index.ts",
     "lint": "eslint *.ts --fix",
