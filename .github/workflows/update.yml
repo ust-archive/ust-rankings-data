@@ -50,7 +50,7 @@ jobs:
 
       - name: Setup Commit This
         run: |
-          git config --local user.email "bot@ust-rankings.vercel.app"
+          git config --local user.email "bot@ust-rankings.com"
           git config --local user.name "UST Rankings Bot"
           git add .
 
