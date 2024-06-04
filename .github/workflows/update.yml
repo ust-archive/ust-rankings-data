@@ -31,14 +31,14 @@ jobs:
       - name: Checkout Review
         uses: actions/checkout@v3
         with:
-          repository: Waver-Velvet/ust.space-data
+          repository: ust-archive/ust.space-data
           fetch-depth: 1
           path: './data-review'
 
       - name: Checkout Quota
         uses: actions/checkout@v3
         with:
-          repository: FlandiaYingman/quota-data-at-ust
+          repository: ust-archive/quota-data-at-ust
           fetch-depth: 1
           path: './data-quota'
 

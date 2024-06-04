@@ -28443,8 +28443,8 @@ async function loadReviews() {
     }))).flat();
 }
 async function loadCourses() {
-    const term = await promises_default().readFile('data-quota/data/current-term.txt', 'utf-8');
-    const coursesJson = await promises_default().readFile(`data-quota/data/${term} Slim.json`, 'utf-8');
+    const term = await promises_default().readFile('data-schedule-quota/data/current-term.txt', 'utf-8');
+    const coursesJson = await promises_default().readFile(`data-schedule-quota/data/${term} Slim.json`, 'utf-8');
     const courses = Object.values(JSON.parse(coursesJson)).flat();
     const data = courses
         .flatMap(course => {
