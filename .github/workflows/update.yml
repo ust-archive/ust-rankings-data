@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
         # skip git hooks by -n
         run: |
-          now=$(date +"%Y-%m-%d")
+          now=$(TZ=Asia/Hong_Kong date +"%Y-%m-%d")
           git commit -a -m "update: $now" -n
 
       - name: Push This
