@@ -1,6 +1,6 @@
 {
   "name": "ust-rankings-data",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "update:cq": "cd data-cq && git fetch --prune && git reset --hard origin",
@@ -8,7 +8,9 @@
     "update": "pnpm update:cq && pnpm update:review",
     "lint": "eslint *.ts --fix",
     "run:inspect-data": "tsx src/data/index.ts",
-    "run:instructor": "tsx src/instructor/index.ts"
+    "run:instructor": "tsx src/stat/instructor/index.ts",
+    "run:course": "tsx src/stat/course/index.ts",
+    "run": "tsx src/index.ts"
   },
   "exports": {
     ".": "./dist/index.js"

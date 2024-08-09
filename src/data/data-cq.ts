@@ -7,7 +7,7 @@ import { calcTermNumber } from "./utils.js";
 
 export const CQ = Type.Object({
   id: Type.Optional(Type.String({ maxLength: 64 })),
-  term: Type.String(),
+  term: Type.String({ maxLength: 16 }),
   termName: Type.String(),
   termNumber: Type.Number({ minimum: 0, maximum: 99 * 4 + 3, multipleOf: 1 }),
   subject: Type.String({ maxLength: 8 }),
@@ -28,7 +28,15 @@ export const CQSchema = {
     fields: ["term", "subject", "number"],
     separator: " ",
   },
-  indexes: ["subject", "number", ["subject", "number"]],
+  indexes: [
+    "subject",
+    "number",
+    ["subject", "number"],
+    "termNumber",
+    ["termNumber", "subject", "number"],
+    "term",
+    ["term", "subject", "number"],
+  ],
   ...CQ,
 } as RxJsonSchema<CQ>;
 

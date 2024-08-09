@@ -59,9 +59,9 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
 
-      - name: Run Update Instructors
+      - name: Run Update
         run: |
-          pnpm run run:instructor
+          pnpm run run
 
       - name: Setup Commit This
         run: |

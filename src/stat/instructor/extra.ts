@@ -1,13 +1,8 @@
-import { ReviewDocument } from "../data/data-review.js";
+import { ReviewDocument } from "../../data/data-review.js";
 import _ from "lodash";
-import { db } from "../data/index.js";
-import { CQDocument } from "../data/data-cq.js";
-import { Context } from "../score/types.js";
-
-export type InstructorExtraObject = {
-  historicalCourses: { subject: string; number: string }[];
-  courses: { subject: string; number: string }[];
-};
+import { db } from "../../data/index.js";
+import { CQDocument } from "../../data/data-cq.js";
+import { Context } from "../types.js";
 
 async function allHistoricalCoursesOf(instructor: string) {
   const reviews: ReviewDocument[] = await db.reviews
@@ -30,7 +25,7 @@ async function allCoursesOf(instructor: string, context: Context) {
         // @ts-expect-error not sure why there is an error with the type
         // doing: select * from cq where instructors contains instructor
         instructors: instructor,
-        termNumber: context.currentTermNumber,
+        termNumber: context.termNumber,
       },
     })
     .exec();
@@ -44,14 +39,15 @@ async function allCoursesOf(instructor: string, context: Context) {
     .value();
 }
 
-async function generateInstructorExtra(instructor: string, context: Context) {
+async function extraOf(instructor: string, context: Context) {
   return {
+    instructor,
     historicalCourses: await allHistoricalCoursesOf(instructor),
     courses: await allCoursesOf(instructor, context),
   };
 }
 
-export async function generateExtra(context: Context) {
+export async function allExtraOf(context: Context) {
   const instructors = _.chain(await db.reviews.find().exec())
     .map((review) => review.instructor)
     .uniq()
@@ -61,7 +57,7 @@ export async function generateExtra(context: Context) {
     _.chain(instructors)
       .map(async (instructor) => [
         instructor,
-        await generateInstructorExtra(instructor, context),
+        await extraOf(instructor, context),
       ])
       .value(),
   );

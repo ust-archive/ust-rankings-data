@@ -9,11 +9,11 @@ import { RawCourse, RawReview } from "./data-review.types.js";
 export const Review = Type.Object({
   id: Type.Optional(Type.String({ maxLength: 64 })),
   hash: Type.String(),
-  term: Type.String(),
+  term: Type.String({ maxLength: 16 }),
   termName: Type.String(),
   termNumber: Type.Number({ minimum: 0, maximum: 99 * 4 + 3, multipleOf: 1 }),
-  subject: Type.String(),
-  number: Type.String(),
+  subject: Type.String({ maxLength: 8 }),
+  number: Type.String({ maxLength: 8 }),
   instructor: Type.String({ maxLength: 32 }),
   ratingInstructor: Type.Number(),
   ratingContent: Type.Number(),
@@ -37,7 +37,16 @@ export const ReviewSchema = {
     fields: ["hash", "instructor"],
     separator: " ",
   },
-  indexes: ["instructor", "termNumber", ["instructor", "termNumber"]],
+  indexes: [
+    "instructor",
+    ["subject", "number"],
+    "termNumber",
+    ["termNumber", "instructor"],
+    ["termNumber", "subject", "number"],
+    "term",
+    ["term", "instructor"],
+    ["term", "subject", "number"],
+  ],
   ...Review,
 } as RxJsonSchema<Review>;
 
